@@ -27,7 +27,7 @@ interface ITile {
   letter: string
   action: Dispatch<any>
   valid: boolean | null,
-  disabled: boolean
+  disabled: boolean,
 }
 const Tile = ({ letter, action, valid, disabled }: ITile): JSX.Element => {
   const [classTile, setClassTile] = useState<string>('')

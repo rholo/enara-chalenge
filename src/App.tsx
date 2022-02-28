@@ -5,12 +5,16 @@ import Restart from './components/Restart';
 import Layout from './components/Layout';
 import Grid from './components/styled/Grid';
 import useFetch from './hooks/useFetch';
-import useMatrix from './hooks/useMatrix';
 interface IBoard {
   board: string[]
 }
 interface IDictionary {
   words: string[]
+}
+interface ITile {
+  position: number,
+  word: string,
+  nextTo: number[]
 }
 
 function App() {
@@ -18,10 +22,11 @@ function App() {
   const { data: dictionaryData } = useFetch<IDictionary>('./dictionary.json')
   const [letters, setLetters] = useState<string[] | null>(null)
   const [word, setWord] = useState<string>('')
-  const [availablesTiles] = useMatrix(0)
+  const [selectedTile, setSelectedTile] = useState<ITile>()
   const [selectedWords, setSelectedWords] = useState<number[]>([])
   const [isValidWord, setIsValidWord] = useState<boolean | null>(null)
   useEffect(() => {
+
     if (!fetchingB) {
       setLetters(boardB!.board)
     }
@@ -45,8 +50,26 @@ function App() {
   }
   const setWordArr = (letter: string, index: number) => {
     setWord(word.concat('', letter))
-    console.log({ selecteds: [...selectedWords, index], exist: selectedWords.includes(index) })
+    setSelectedTile({
+      position: index + 1,
+      word: letter,
+      nextTo: getAvailablesTiles(index + 1)
+    })
+    getAvailablesTiles(index + 1);
     setSelectedWords([...selectedWords, index])
+  }
+  const getAvailablesTiles = (n: number) => {
+    let enabledTiles = []
+    if ([1, 5, 9, 13].includes(n)) {
+      enabledTiles = [n, n + 1, n - 4, n + 4]
+    }
+    if ([4, 8, 12, 16].includes(n)) {
+      enabledTiles = [n, n - 1, n - 4, n + 4]
+    } else {
+      enabledTiles = [n, n - 1, n + 1, n + 4, n - 4]
+    }
+    return enabledTiles.filter(num => num > 0 && num <= 16)
+
   }
   return (<Layout>
     <Restart cleanAll={restart} isDisabled={word.length === 0} />
