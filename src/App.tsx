@@ -5,7 +5,7 @@ import Restart from './components/Restart';
 import Layout from './components/Layout';
 import Grid from './components/styled/Grid';
 import useFetch from './hooks/useFetch';
-
+import useMatrix from './hooks/useMatrix';
 interface IBoard {
   board: string[]
 }
@@ -18,6 +18,7 @@ function App() {
   const { data: dictionaryData } = useFetch<IDictionary>('./dictionary.json')
   const [letters, setLetters] = useState<string[] | null>(null)
   const [word, setWord] = useState<string>('')
+  const [availablesTiles] = useMatrix(0)
   const [selectedWords, setSelectedWords] = useState<number[]>([])
   const [isValidWord, setIsValidWord] = useState<boolean | null>(null)
   useEffect(() => {
