@@ -16,10 +16,10 @@ const TileSpan = styled.span`
   display: flex;
   justify-content: center;
   align-items: center;
-  &.choosen {
+  &.not-valid {
     background: linear-gradient(to bottom, #f4505f, #9f041b);
   }
-  &.available{
+  &.valid {
     background: linear-gradient(to bottom, #b3ec50, #439422);
   }
 `
@@ -28,25 +28,26 @@ interface ITile {
   action: Dispatch<any>
   valid: boolean | null,
   disabled: boolean,
+  used: boolean
 }
-const Tile = ({ letter, action, valid, disabled }: ITile): JSX.Element => {
+const Tile = ({ letter, action, valid, disabled, used }: ITile): JSX.Element => {
   const [classTile, setClassTile] = useState<string>('')
-  const [usedWord, setUsedWord] = useState<string[]>([])
   useEffect(() => {
-    if (typeof valid === 'boolean' && disabled) {
-      setClassTile(valid ? 'available' : 'choosen')
+    if (typeof valid === 'boolean' && used) {
+      setClassTile(valid ? 'valid' : 'not-valid')
     } else {
       setClassTile('')
     }
   })
-  const chooseTile = () => {
-    action(letter)
-    setUsedWord([...usedWord, letter])
-  }
-  return (<TileBtn className={classTile} onClick={chooseTile} disabled={disabled}>
-    <TileSpan className={classTile}>
-      {letter}
-    </TileSpan>
-  </TileBtn>)
+
+  return (
+    <TileBtn
+      className={classTile}
+      onClick={() => action(letter)}
+      disabled={disabled}>
+      <TileSpan className={classTile}>
+        {letter}
+      </TileSpan>
+    </TileBtn>)
 }
 export default Tile;

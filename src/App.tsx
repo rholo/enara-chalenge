@@ -61,8 +61,7 @@ function App() {
     let enabledTiles = []
     if ([0, 4, 8, 12].includes(n)) {
       enabledTiles = [n + 1, n - 4, n + 4]
-    }
-    if ([3, 7, 11, 15].includes(n)) {
+    } else if ([3, 7, 11, 15].includes(n)) {
       enabledTiles = [n - 1, n - 4, n + 4]
     } else {
       enabledTiles = [n - 1, n + 1, n + 4, n - 4]
@@ -74,7 +73,6 @@ function App() {
       return false
     }
     const { nextTo } = selectedTile;
-
     return !nextTo.includes(index) || selectedWords.includes(index)
   }
   return (<Layout>
@@ -86,6 +84,7 @@ function App() {
             key={index}
             letter={letter}
             valid={isValidWord}
+            used={selectedWords.includes(index)}
             disabled={getDisabledTile(index)}
             action={() => setWordArr(letter, index)} />
         )
