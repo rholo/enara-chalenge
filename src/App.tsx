@@ -5,12 +5,16 @@ import Restart from './components/Restart';
 import Layout from './components/Layout';
 import Grid from './components/styled/Grid';
 import useFetch from './hooks/useFetch';
-
 interface IBoard {
   board: string[]
 }
 interface IDictionary {
   words: string[]
+}
+interface ITile {
+  position: number | null,
+  word: string | null,
+  nextTo: number[]
 }
 
 function App() {
@@ -18,9 +22,11 @@ function App() {
   const { data: dictionaryData } = useFetch<IDictionary>('./dictionary.json')
   const [letters, setLetters] = useState<string[] | null>(null)
   const [word, setWord] = useState<string>('')
+  const [selectedTile, setSelectedTile] = useState<ITile>({ position: null, word: null, nextTo: [] })
   const [selectedWords, setSelectedWords] = useState<number[]>([])
   const [isValidWord, setIsValidWord] = useState<boolean | null>(null)
   useEffect(() => {
+
     if (!fetchingB) {
       setLetters(boardB!.board)
     }
@@ -44,8 +50,30 @@ function App() {
   }
   const setWordArr = (letter: string, index: number) => {
     setWord(word.concat('', letter))
-    console.log({ selecteds: [...selectedWords, index], exist: selectedWords.includes(index) })
+    setSelectedTile({
+      position: index,
+      word: letter,
+      nextTo: getAvailablesTiles(index)
+    })
     setSelectedWords([...selectedWords, index])
+  }
+  const getAvailablesTiles = (n: number) => {
+    let enabledTiles = []
+    if ([0, 4, 8, 12].includes(n)) {
+      enabledTiles = [n + 1, n - 4, n + 4]
+    } else if ([3, 7, 11, 15].includes(n)) {
+      enabledTiles = [n - 1, n - 4, n + 4]
+    } else {
+      enabledTiles = [n - 1, n + 1, n + 4, n - 4]
+    }
+    return enabledTiles.filter(num => num >= 0 && num < 16)
+  }
+  const getDisabledTile = (index: number) => {
+    if (selectedWords.length === 0) {
+      return false
+    }
+    const { nextTo } = selectedTile;
+    return !nextTo.includes(index) || selectedWords.includes(index)
   }
   return (<Layout>
     <Restart cleanAll={restart} isDisabled={word.length === 0} />
@@ -56,7 +84,8 @@ function App() {
             key={index}
             letter={letter}
             valid={isValidWord}
-            disabled={selectedWords.includes(index)}
+            used={selectedWords.includes(index)}
+            disabled={getDisabledTile(index)}
             action={() => setWordArr(letter, index)} />
         )
       }

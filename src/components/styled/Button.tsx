@@ -15,7 +15,7 @@ export const TileBtn = styled(Btn)`
   border-radius: 8px;
   position: relative;
   background: linear-gradient(to bottom, #f5515f, #a0051c);
-  &.choosen, &.available{
+  &.not-valid, &.valid{
     background: transparent;
   }
   overflow: hidden;
